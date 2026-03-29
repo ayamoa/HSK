@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSK 1 · ELITE MULTILINGUE (FULL)</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Noto+Serif+SC:wght@900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050505; --surface: #0f0f0f; --panel: #161616;
+  --primary: #FF0000; --accent: #D4AF37; --text: #FFFFFF;
+  --text-dim: #888888; --border: #222222; --border-bold: #444444;
+  --success: #2d7a4f;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+/* ECRAN D'ACCÈS AUDIO */
+#unlocker { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 15px solid var(--primary); text-align: center; padding: 20px; }
+#unlocker h1 { font-family: 'Noto Serif SC', serif; font-size: clamp(3rem, 10vw, 6rem); color: var(--primary); margin-bottom: 20px; }
+#audioStatus { font-family: 'Space Mono'; color: var(--accent); margin-bottom: 20px; font-size: 0.8rem; }
+#unlocker button { background: var(--primary); color: white; border: none; padding: 20px 40px; font-family: 'Space Mono'; font-weight: 900; font-size: 1rem; cursor: pointer; letter-spacing: 5px; }
+
+/* NAVIGATION */
+nav { width: 260px; background: var(--surface); border-right: 2px solid var(--border-bold); display: flex; flex-direction: column; padding: 20px 0; flex-shrink: 0; z-index: 100; }
+.brand { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
+.brand h1 { font-family: 'Noto Serif SC', serif; font-size: 1.8rem; color: var(--primary); }
+nav button { background: none; border: none; color: var(--text-dim); text-align: left; padding: 15px 20px; font-size: 0.75rem; font-family: 'Space Mono'; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; border-left: 4px solid transparent; }
+nav button:hover, nav button.active { color: var(--text); background: var(--panel); border-left-color: var(--primary); }
+
+/* MAIN CONTENT */
+main { flex-grow: 1; overflow-y: auto; padding: 20px; scrollbar-width: thin; scrollbar-color: var(--primary) var(--bg); }
+.section { display: none; max-width: 1100px; margin: 0 auto; }
+.section.active { display: block; }
+
+/* TOP BAR */
+.top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+.top-bar h2 { font-family: 'Space Mono'; font-size: 1rem; letter-spacing: 2px; }
+.lang-switcher { display: flex; gap: 5px; }
+.lang-btn { background: var(--panel); border: 1px solid var(--border-bold); color: var(--text-dim); padding: 5px 10px; font-family: 'Space Mono'; font-size: 0.7rem; cursor: pointer; }
+.lang-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+/* GRID & CARDS */
+.vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+.vocab-card { background: var(--surface); border: 1px solid var(--border); padding: 20px; transition: 0.2s; cursor: pointer; position: relative; }
+.vocab-card:hover { border-color: var(--accent); }
+.vocab-char { font-family: 'Noto Serif SC', serif; font-size: 3.5rem; color: var(--accent); line-height: 1; margin-bottom: 5px; }
+.vocab-pinyin { color: var(--primary); font-family: 'Space Mono'; font-weight: 700; font-size: 0.8rem; margin-bottom: 3px; }
+.vocab-fr { font-size: 1rem; color: var(--text); font-weight: 300; margin-bottom: 10px; }
+.vocab-ex { font-size: 0.75rem; color: var(--text-dim); border-top: 1px solid var(--border); padding-top: 8px; line-height: 1.3; }
+
+/* RESUME / CHECKLIST */
+.resume-cat { margin-bottom: 30px; }
+.resume-cat h3 { font-family: 'Space Mono'; color: var(--accent); font-size: 0.8rem; margin-bottom: 10px; border-left: 3px solid var(--primary); padding-left: 10px; }
+.resume-row { display: grid; grid-template-columns: 80px 100px 1fr 40px; background: var(--surface); margin-bottom: 2px; padding: 10px; align-items: center; font-size: 0.8rem; cursor: pointer; }
+.resume-row:hover { background: var(--panel); }
+
+/* QUIZ */
+.quiz-box { max-width: 500px; margin: 40px auto; background: var(--surface); border: 1px solid var(--primary); padding: 30px; text-align: center; }
+.quiz-options { display: grid; gap: 10px; margin-top: 20px; }
+.quiz-opt { background: var(--panel); border: 1px solid var(--border-bold); color: white; padding: 15px; cursor: pointer; font-family: 'Space Grotesk'; }
+.quiz-opt:hover { border-color: var(--accent); }
+
+/* STATS */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.stat-box { background: var(--surface); border: 1px solid var(--border-bold); padding: 15px; text-align: center; }
+.stat-num { font-size: 1.8rem; font-family: 'Noto Serif SC'; color: var(--primary); }
+.stat-label { font-family: 'Space Mono'; font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; }
+.lp-bar { height: 6px; background: var(--border); margin-top: 4px; }
+.lp-fill { height: 100%; background: var(--accent); transition: width 0.5s; }
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 800px) {
+    body { flex-direction: column; }
+    nav { width: 100%; height: auto; padding: 5px; flex-direction: row; overflow-x: auto; border-right: none; border-bottom: 2px solid var(--border-bold); }
+    .brand { display: none; }
+    nav button { padding: 10px 15px; white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; font-size: 0.65rem; }
+    nav button.active { border-bottom-color: var(--primary); }
+}
+
+.mastered-badge { position: absolute; top: 10px; right: 10px; background: var(--success); font-size: 0.5rem; padding: 2px 5px; font-family: 'Space Mono'; }
+</style>
+</head>
+<body>
+
+<div id="unlocker">
+    <h1>學漢語</h1>
+    <div id="audioStatus">CHARGEMENT DES VOIX...</div>
+    <button id="btnEntrer" onclick="startApp()" style="display:none">DÉMARRER LE MODULE</button>
+</div>
+
+<nav>
+    <div class="brand"><h1>普通</h1></div>
+    <button class="active" id="nav-1" onclick="showSection('fiches', this)">01. LEXIQUE</button>
+    <button id="nav-2" onclick="showSection('resume', this)">02. RÉSUMÉS</button>
+    <button id="nav-3" onclick="showSection('quiz', this)">03. QUIZ</button>
+    <button id="nav-4" onclick="showSection('stats', this)">04. PROGRESSION</button>
+</nav>
+
+<main>
+    <div class="top-bar">
+        <h2 id="viewTitle">BIBLIOTHÈQUE HSK1</h2>
+        <div class="lang-switcher">
+            <button class="lang-btn" id="lang-fr" onclick="changeLang('fr')">FR</button>
+            <button class="lang-btn" id="lang-en" onclick="changeLang('en')">EN</button>
+        </div>
+    </div>
+
+    <div class="section active" id="fiches">
+        <div style="margin-bottom:20px; display:flex; gap:10px;">
+            <input type="text" id="searchInput" style="background:var(--surface); border:1px solid var(--border-bold); color:white; padding:12px; font-family:'Space Mono'; flex-grow:1;" placeholder="Rechercher..." oninput="renderFiches()">
+            <select id="catFilter" onchange="renderFiches()" style="background:var(--panel); color:white; border:1px solid var(--border-bold); padding:0 10px;">
+                <option value="All">Toutes les catégories</option>
+            </select>
+        </div>
+        <div class="vocab-grid" id="vocabGrid"></div>
+    </div>
+
+    <div class="section" id="resume">
+        <div id="resumeContainer"></div>
+    </div>
+
+    <div class="section" id="quiz">
+        <div class="quiz-box" id="quizContent">
+            <p id="quizInstructions">Choisissez une catégorie pour commencer</p>
+            <div id="quizCatSelection" class="quiz-options"></div>
+            <div id="quizGame" style="display:none">
+                <div id="quizChar" style="font-size:5rem; font-family:'Noto Serif SC'; color:var(--accent);"></div>
+                <div id="quizOptions" class="quiz-options"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="stats">
+        <div class="stats-grid">
+            <div class="stat-box"><div class="stat-num" id="statMastered">0</div><div class="stat-label">Mots Maîtrisés</div></div>
+            <div class="stat-box"><div class="stat-num">150</div><div class="stat-label">Total HSK1</div></div>
+            <div class="stat-box"><div class="stat-num" id="statStreak">1</div><div class="stat-label">Série Jours 🔥</div></div>
+        </div>
+        <div id="progressionBars"></div>
+    </div>
+</main>
+
+<script>
+// --- DONNÉES COMPLÈTES HSK1 (150 MOTS) ---
+const HSK1 = [
+    {char:"爱",pinyin:"ài",fr:"Aimer",en:"To love",cat:"Verbes",ex:"我爱北京。",exFr:"J'aime Pékin."},
+    {char:"八",pinyin:"bā",fr:"Huit",en:"Eight",cat:"Chiffres",ex:"八个人。",exFr:"Huit personnes."},
+    {char:"爸爸",pinyin:"bàba",fr:"Papa",en:"Dad",cat:"Famille",ex:"我爸爸是医生。",exFr:"Mon papa est médecin."},
+    {char:"杯子",pinyin:"bēizi",fr:"Verre / Tasse",en:"Cup",cat:"Objets",ex:"桌子上有个杯子。",exFr:"Il y a un verre sur la table."},
+    {char:"北京",pinyin:"Běijīng",fr:"Pékin",en:"Beijing",cat:"Lieux",ex:"我去北京。",exFr:"Je vais à Pékin."},
+    {char:"本",pinyin:"běn",fr:"(classificateur livres)",en:"(measure word for books)",cat:"Grammaire",ex:"一本书。",exFr:"Un livre."},
+    {char:"不客气",pinyin:"bú kèqi",fr:"De rien",en:"You're welcome",cat:"Social",ex:"谢谢！不客气。",exFr:"Merci ! De rien."},
+    {char:"不",pinyin:"bù",fr:"Non / Ne pas",en:"No / Not",cat:"Grammaire",ex:"我不去。",exFr:"Je n'y vais pas."},
+    {char:"菜",pinyin:"cài",fr:"Plat / Légume",en:"Dish / Vegetable",cat:"Nourriture",ex:"中国菜很好吃。",exFr:"La cuisine chinoise est bonne."},
+    {char:"茶",pinyin:"chá",fr:"Thé",en:"Tea",cat:"Nourriture",ex:"请喝茶。",exFr:"S'il vous plaît, buvez du thé."},
+    {char:"吃",pinyin:"chī",fr:"Manger",en:"To eat",cat:"Verbes",ex:"吃饭。",exFr:"Manger un repas."},
+    {char:"出租车",pinyin:"chūzūchē",fr:"Taxi",en:"Taxi",cat:"Transport",ex:"坐出租车。",exFr:"Prendre le taxi."},
+    {char:"打电话",pinyin:"dǎ diànhuà",fr:"Téléphoner",en:"To call",cat:"Verbes",ex:"他在打电话。",exFr:"Il est au téléphone."},
+    {char:"大",pinyin:"dà",fr:"Grand",en:"Big",cat:"Adjectifs",ex:"这个苹果很大。",exFr:"Cette pomme est grande."},
+    {char:"的",pinyin:"de",fr:"(possession)",en:"(possessive)",cat:"Grammaire",ex:"我的书。",exFr:"Mon livre."},
+    {char:"点",pinyin:"diǎn",fr:"Heure",en:"O'clock",cat:"Temps",ex:"现在三点。",exFr:"Il est trois heures."},
+    {char:"电脑",pinyin:"diànnǎo",fr:"Ordinateur",en:"Computer",cat:"Objets",ex:"买电脑。",exFr:"Acheter un ordinateur."},
+    {char:"电视",pinyin:"diànshì",fr:"Télévision",en:"TV",cat:"Objets",ex:"看电视。",exFr:"Regarder la télé."},
+    {char:"电影",pinyin:"diànyǐng",fr:"Film",en:"Movie",cat:"Objets",ex:"看电影。",exFr:"Voir un film."},
+    {char:"东西",pinyin:"dōngxi",fr:"Chose / Objet",en:"Thing",cat:"Objets",ex:"买东西。",exFr:"Acheter des choses."},
+    {char:"都",pinyin:"dōu",fr:"Tout / Tous",en:"All / Both",cat:"Grammaire",ex:"我们都去。",exFr:"Nous y allons tous."},
+    {char:"读",pinyin:"dú",fr:"Lire",en:"To read",cat:"Verbes",ex:"读书。",exFr:"Lire un livre."},
+    {char:"对不起",pinyin:"duìbuqǐ",fr:"Désolé",en:"Sorry",cat:"Social",ex:"对不起，我来晚了。",exFr:"Désolé, je suis en retard."},
+    {char:"多",pinyin:"duō",fr:"Beaucoup",en:"Many",cat:"Adjectifs",ex:"这里人很多。",exFr:"Il y a beaucoup de monde ici."},
+    {char:"多少",pinyin:"duōshǎo",fr:"Combien",en:"How much",cat:"Questions",ex:"多少钱？",exFr:"Combien ça coûte ?"},
+    {char:"儿子",pinyin:"érzi",fr:"Fils",en:"Son",cat:"Famille",ex:"他有两个儿子。",exFr:"Il a deux fils."},
+    {char:"二",pinyin:"èr",fr:"Deux",en:"Two",cat:"Chiffres",ex:"二十。",exFr:"Vingt."},
+    {char:"饭店",pinyin:"fàndiàn",fr:"Restaurant",en:"Restaurant",cat:"Lieux",ex:"去饭店吃饭。",exFr:"Aller au restaurant."},
+    {char:"飞机",pinyin:"fēijī",fr:"Avion",en:"Airplane",cat:"Transport",ex:"坐飞机。",exFr:"Prendre l'avion."},
+    {char:"分钟",pinyin:"fēnzhōng",fr:"Minute",en:"Minute",cat:"Temps",ex:"十分钟。",exFr:"Dix minutes."},
+    {char:"高兴",pinyin:"gāoxìng",fr:"Heureux / Content",en:"Happy",cat:"Adjectifs",ex:"很高兴认识你。",exFr:"Ravi de vous rencontrer."},
+    {char:"个",pinyin:"gè",fr:"(classificateur général)",en:"(general measure word)",cat:"Grammaire",ex:"三个人。",exFr:"Trois personnes."},
+    {char:"工作",pinyin:"gōngzuò",fr:"Travail / Travailler",en:"Work",cat:"Verbes",ex:"他在医院工作。",exFr:"Il travaille à l'hôpital."},
+    {char:"狗",pinyin:"gǒu",fr:"Chien",en:"Dog",cat:"Animaux",ex:"一只小狗。",exFr:"Un petit chien."},
+    {char:"汉语",pinyin:"Hànyǔ",fr:"Chinois (langue)",en:"Chinese",cat:"Social",ex:"说汉语。",exFr:"Parler chinois."},
+    {char:"好",pinyin:"hǎo",fr:"Bien / Bon",en:"Good",cat:"Adjectifs",ex:"很好。",exFr:"Très bien."},
+    {char:"喝",pinyin:"hē",fr:"Boire",en:"To drink",cat:"Verbes",ex:"喝水。",exFr:"Boire de l'eau."},
+    {char:"和",pinyin:"hé",fr:"Et",en:"And",cat:"Grammaire",ex:"我和你。",exFr:"Toi et moi."},
+    {char:"很",pinyin:"hěn",fr:"Très",en:"Very",cat:"Grammaire",ex:"很大。",exFr:"Très grand."},
+    {char:"后面",pinyin:"hòumiàn",fr:"Derrière",en:"Behind",cat:"Lieux",ex:"学校后面。",exFr:"Derrière l'école."},
+    {char:"回",pinyin:"huí",fr:"Revenir / Rentrer",en:"To return",cat:"Verbes",ex:"回家。",exFr:"Rentrer à la maison."},
+    {char:"会",pinyin:"huì",fr:"Savoir (faire)",en:"Can / Know how",cat:"Verbes",ex:"我会说汉语。",exFr:"Je sais parler chinois."},
+    {char:"几",pinyin:"jǐ",fr:"Combien (petit)",en:"How many",cat:"Questions",ex:"你有几个？",exFr:"Tu en as combien ?"},
+    {char:"家",pinyin:"jiā",fr:"Maison / Famille",en:"Home",cat:"Lieux",ex:"我不在家。",exFr:"Je ne suis pas à la maison."},
+    {char:"叫",pinyin:"jiào",fr:"S'appeler",en:"To be called",cat:"Verbes",ex:"你叫什么？",exFr:"Comment t'appelles-tu ?"},
+    {char:"今天",pinyin:"jīntiān",fr:"Aujourd'hui",en:"Today",cat:"Temps",ex:"今天星期一。",exFr:"Aujourd'hui c'est lundi."},
+    {char:"九",pinyin:"jiǔ",fr:"Neuf",en:"Nine",cat:"Chiffres",ex:"九点。",exFr:"Neuf heures."},
+    {char:"开",pinyin:"kāi",fr:"Ouvrir / Conduire",en:"Open / Drive",cat:"Verbes",ex:"开门。",exFr:"Ouvrir la porte."},
+    {char:"看",pinyin:"kàn",fr:"Regarder / Lire",en:"Look / Read",cat:"Verbes",ex:"看书。",exFr:"Lire un livre."},
+    {char:"看见",pinyin:"kànjiàn",fr:"Voir / Apercevoir",en:"To see",cat:"Verbes",ex:"我看见他了。",exFr:"Je l'ai vu."},
+    {char:"块",pinyin:"kuài",fr:"(monnaie) / Morceau",en:"(money unit)",cat:"Grammaire",ex:"五块钱。",exFr:"Cinq yuans."},
+    {char:"来",pinyin:"lái",fr:"Venir",en:"To come",cat:"Verbes",ex:"来这里。",exFr:"Venir ici."},
+    {char:"老师",pinyin:"lǎoshī",fr:"Professeur",en:"Teacher",cat:"Social",ex:"老师好！",exFr:"Bonjour prof !"},
+    {char:"了",pinyin:"le",fr:"(changement d'état)",en:"(particle)",cat:"Grammaire",ex:"他来了。",exFr:"Il est venu."},
+    {char:"冷",pinyin:"lěng",fr:"Froid",en:"Cold",cat:"Adjectifs",ex:"今天很冷。",exFr:"Il fait froid aujourd'hui."},
+    {char:"里",pinyin:"lǐ",fr:"Dans",en:"Inside",cat:"Lieux",ex:"家里面。",exFr:"Dans la maison."},
+    {char:"六",pinyin:"liù",fr:"Six",en:"Six",cat:"Chiffres",ex:"六个月。",exFr:"Six mois."},
+    {char:"吗",pinyin:"ma",fr:"(interrogatif)",en:"(question particle)",cat:"Grammaire",ex:"你好吗？",exFr:"Ça va ?"},
+    {char:"妈妈",pinyin:"māma",fr:"Maman",en:"Mom",cat:"Famille",ex:"我妈妈。",exFr:"Ma maman."},
+    {char:"买",pinyin:"mǎi",fr:"Acheter",en:"To buy",cat:"Verbes",ex:"买东西。",exFr:"Faire des courses."},
+    {char:"猫",pinyin:"māo",fr:"Chat",en:"Cat",cat:"Animaux",ex:"一只猫。",exFr:"Un chat."},
+    {char:"没关系",pinyin:"méi guānxi",fr:"C'est pas grave",en:"No problem",cat:"Social",ex:"对不起！没关系。",exFr:"Désolé ! C'est rien."},
+    {char:"没有",pinyin:"méiyǒu",fr:"Ne pas avoir",en:"Not have",cat:"Verbes",ex:"我没有钱。",exFr:"Je n'ai pas d'argent."},
+    {char:"米饭",pinyin:"mǐfàn",fr:"Riz (cuit)",en:"Cooked rice",cat:"Nourriture",ex:"吃米饭。",exFr:"Manger du riz."},
+    {char:"名字",pinyin:"míngzi",fr:"Nom / Prénom",en:"Name",cat:"Social",ex:"你叫什么名字？",exFr:"Comment t'appelles-tu ?"},
+    {char:"明天",pinyin:"míngtiān",fr:"Demain",en:"Tomorrow",cat:"Temps",ex:"明天见。",exFr:"À demain."},
+    {char:"哪",pinyin:"nǎ",fr:"Lequel / Où",en:"Which",cat:"Questions",ex:"你是哪国人？",exFr:"De quel pays es-tu ?"},
+    {char:"哪儿",pinyin:"nǎr",fr:"Où",en:"Where",cat:"Questions",ex:"你在哪儿？",exFr:"Où es-tu ?"},
+    {char:"那",pinyin:"nà",fr:"Cela / Là-bas",en:"That",cat:"Grammaire",ex:"那是我的书。",exFr:"C'est mon livre (là-bas)."},
+    {char:"呢",pinyin:"ne",fr:"(interrogatif)",en:"(particle)",cat:"Grammaire",ex:"你呢？",exFr:"Et toi ?"},
+    {char:"能",pinyin:"néng",fr:"Pouvoir",en:"Can / Be able",cat:"Verbes",ex:"我能去吗？",exFr:"Puis-je y aller ?"},
+    {char:"你",pinyin:"nǐ",fr:"Tu / Toi",en:"You",cat:"Pronoms",ex:"你好。",exFr:"Bonjour."},
+    {char:"年",pinyin:"nián",fr:"Année",en:"Year",cat:"Temps",ex:"今年。",exFr:"Cette année."},
+    {char:"女儿",pinyin:"nǚ'ér",fr:"Fille (enfant)",en:"Daughter",cat:"Famille",ex:"我女儿三岁。",exFr:"Ma fille a 3 ans."},
+    {char:"朋友",pinyin:"péngyou",fr:"Ami",en:"Friend",cat:"Social",ex:"他是我的好朋友。",exFr:"C'est mon bon ami."},
+    {char:"漂亮",pinyin:"piàoliang",fr:"Joli / Beau",en:"Beautiful",cat:"Adjectifs",ex:"她很漂亮。",exFr:"Elle est très jolie."},
+    {char:"苹果",pinyin:"píngguǒ",fr:"Pomme",en:"Apple",cat:"Nourriture",ex:"吃苹果。",exFr:"Manger une pomme."},
+    {char:"七",pinyin:"qī",fr:"Sept",en:"Seven",cat:"Chiffres",ex:"七点。",exFr:"Sept heures."},
+    {char:"钱",pinyin:"qián",fr:"Argent",en:"Money",cat:"Objets",ex:"多少钱？",exFr:"Combien d'argent ?"},
+    {char:"前面",pinyin:"qiánmiàn",fr:"Devant",en:"In front",cat:"Lieux",ex:"学校前面。",exFr:"Devant l'école."},
+    {char:"请",pinyin:"qǐng",fr:"S'il vous plaît",en:"Please",cat:"Social",ex:"请坐。",exFr:"Asseyez-vous s'il vous plaît."},
+    {char:"去",pinyin:"qù",fr:"Aller",en:"To go",cat:"Verbes",ex:"我去学校。",exFr:"Je vais à l'école."},
+    {char:"热",pinyin:"rè",fr:"Chaud",en:"Hot",cat:"Adjectifs",ex:"今天很热。",exFr:"Il fait chaud aujourd'hui."},
+    {char:"人",pinyin:"rén",fr:"Personne / Humain",en:"Person",cat:"Social",ex:"中国人。",exFr:"Un Chinois."},
+    {char:"认识",pinyin:"rènshi",fr:"Connaître",en:"To know",cat:"Verbes",ex:"认识你很高兴。",exFr:"Ravi de te connaître."},
+    {char:"三",pinyin:"sān",fr:"Trois",en:"Three",cat:"Chiffres",ex:"三点。",exFr:"Trois heures."},
+    {char:"商店",pinyin:"shāngdiàn",fr:"Magasin",en:"Shop",cat:"Lieux",ex:"去商店买东西。",exFr:"Aller au magasin."},
+    {char:"上",pinyin:"shàng",fr:"Sur / Monter",en:"Up / On",cat:"Lieux",ex:"桌子上。",exFr:"Sur la table."},
+    {char:"上午",pinyin:"shàngwǔ",fr:"Matin",en:"Morning",cat:"Temps",ex:"上午十点。",exFr:"10h du matin."},
+    {char:"少",pinyin:"shǎo",fr:"Peu",en:"Few",cat:"Adjectifs",ex:"人很少。",exFr:"Il y a peu de monde."},
+    {char:"谁",pinyin:"shéi",fr:"Qui",en:"Who",cat:"Questions",ex:"他是谁？",exFr:"Qui est-il ?"},
+    {char:"什么",pinyin:"shénme",fr:"Quoi",en:"What",cat:"Questions",ex:"这是什么？",exFr:"C'est quoi ?"},
+    {char:"十",pinyin:"shí",fr:"Dix",en:"Ten",cat:"Chiffres",ex:"十块钱。",exFr:"Dix yuans."},
+    {char:"时候",pinyin:"shíhou",fr:"Temps / Moment",en:"Time / Moment",cat:"Temps",ex:"什么时候？",exFr:"A quel moment ?"},
+    {char:"是",pinyin:"shì",fr:"Être",en:"To be",cat:"Verbes",ex:"我是老师。",exFr:"Je suis professeur."},
+    {char:"书",pinyin:"shū",fr:"Livre",en:"Book",cat:"Objets",ex:"看书。",exFr:"Lire un livre."},
+    {char:"水",pinyin:"shuǐ",fr:"Eau",en:"Water",cat:"Nourriture",ex:"喝水。",exFr:"Boire de l'eau."},
+    {char:"水果",pinyin:"shuǐguǒ",fr:"Fruit",en:"Fruit",cat:"Nourriture",ex:"买水果。",exFr:"Acheter des fruits."},
+    {char:"睡觉",pinyin:"shuìjiào",fr:"Dormir",en:"To sleep",cat:"Verbes",ex:"去睡觉。",exFr:"Aller dormir."},
+    {char:"说",pinyin:"shuō",fr:"Parler / Dire",en:"To speak",cat:"Verbes",ex:"说话。",exFr:"Parler."},
+    {char:"说话",pinyin:"shuōhuà",fr:"Parler / Discuter",en:"To talk",cat:"Verbes",ex:"他在说话。",exFr:"Il est en train de parler."},
+    {char:"四",pinyin:"sì",fr:"Quatre",en:"Four",cat:"Chiffres",ex:"四点。",exFr:"Quatre heures."},
+    {char:"岁",pinyin:"suì",fr:"Ans (âge)",en:"Years old",cat:"Temps",ex:"二十岁。",exFr:"Vingt ans."},
+    {char:"他",pinyin:"tā",fr:"Il",en:"He",cat:"Pronoms",ex:"他是我的朋友。",exFr:"C'est mon ami."},
+    {char:"她",pinyin:"tā",fr:"Elle",en:"She",cat:"Pronoms",ex:"她很漂亮。",exFr:"Elle est belle."},
+    {char:"太",pinyin:"tài",fr:"Trop",en:"Too",cat:"Grammaire",ex:"太大了。",exFr:"C'est trop grand."},
+    {char:"天气",pinyin:"tiānqì",fr:"Météo",en:"Weather",cat:"Temps",ex:"今天天气很好。",exFr:"Il fait beau aujourd'hui."},
+    {char:"听",pinyin:"tīng",fr:"Écouter",en:"To listen",cat:"Verbes",ex:"听音乐。",exFr:"Écouter de la musique."},
+    {char:"同学",pinyin:"tóngxué",fr:"Camarade",en:"Classmate",cat:"Social",ex:"我的同学。",exFr:"Mon camarade."},
+    {char:"喂",pinyin:"wèi",fr:"Allo",en:"Hello (on phone)",cat:"Social",ex:"喂，你好。",exFr:"Allo, bonjour."},
+    {char:"我",pinyin:"wǒ",fr:"Je / Moi",en:"I / Me",cat:"Pronoms",ex:"我是法国人。",exFr:"Je suis français."},
+    {char:"我们",pinyin:"wǒmen",fr:"Nous",en:"We",cat:"Pronoms",ex:"我们去吃饭。",exFr:"Nous allons manger."},
+    {char:"五",pinyin:"wǔ",fr:"Cinq",en:"Five",cat:"Chiffres",ex:"五块。",exFr:"Cinq yuans."},
+    {char:"喜欢",pinyin:"xǐhuan",fr:"Aimer / Apprécier",en:"To like",cat:"Verbes",ex:"我喜欢猫。",exFr:"J'aime les chats."},
+    {char:"下",pinyin:"xià",fr:"Sous / Descendre",en:"Under",cat:"Lieux",ex:"桌子下面。",exFr:"Sous la table."},
+    {char:"下午",pinyin:"xiàwǔ",fr:"Après-midi",en:"Afternoon",cat:"Temps",ex:"下午三点。",exFr:"15h (l'après-midi)."},
+    {char:"下雨",pinyin:"xiàyǔ",fr:"Pleuvoir",en:"To rain",cat:"Temps",ex:"下雨了。",exFr:"Il pleut."},
+    {char:"先生",pinyin:"xiānsheng",fr:"Monsieur / Mari",en:"Mister",cat:"Social",ex:"王先生。",exFr:"Monsieur Wang."},
+    {char:"现在",pinyin:"xiànzài",fr:"Maintenant",en:"Now",cat:"Temps",ex:"现在几点？",exFr:"Quelle heure est-il ?"},
+    {char:"小姐",pinyin:"xiǎojiě",fr:"Mademoiselle",en:"Miss",cat:"Social",ex:"王小姐。",exFr:"Mademoiselle Wang."},
+    {char:"小",pinyin:"xiǎo",fr:"Petit",en:"Small",cat:"Adjectifs",ex:"小猫。",exFr:"Un petit chat."},
+    {char:"些",pinyin:"xiē",fr:"Quelques",en:"Some",cat:"Grammaire",ex:"这些人。",exFr:"Ces gens-là."},
+    {char:"写",pinyin:"xiě",fr:"Écrire",en:"To write",cat:"Verbes",ex:"写字。",exFr:"Écrire des caractères."},
+    {char:"谢谢",pinyin:"xièxie",fr:"Merci",en:"Thank you",cat:"Social",ex:"谢谢你。",exFr:"Merci à toi."},
+    {char:"星期",pinyin:"xīngqī",fr:"Semaine",en:"Week",cat:"Temps",ex:"下个星期。",exFr:"La semaine prochaine."},
+    {char:"学生",pinyin:"xuésheng",fr:"Étudiant / Élève",en:"Student",cat:"Social",ex:"他是学生。",exFr:"Il est étudiant."},
+    {char:"学习",pinyin:"xuéxí",fr:"Étudier / Apprendre",en:"To study",cat:"Verbes",ex:"学习汉语。",exFr:"Apprendre le chinois."},
+    {char:"学校",pinyin:"xuéxiào",fr:"École",en:"School",cat:"Lieux",ex:"去学校。",exFr:"Aller à l'école."},
+    {char:"一",pinyin:"yī",fr:"Un",en:"One",cat:"Chiffres",ex:"一个。",exFr:"Un seul."},
+    {char:"点儿",pinyin:"diǎnr",fr:"Un peu",en:"A little",cat:"Grammaire",ex:"喝点儿水。",exFr:"Boire un peu d'eau."},
+    {char:"衣服",pinyin:"yīfu",fr:"Vêtement",en:"Clothes",cat:"Objets",ex:"穿衣服。",exFr:"Mettre des vêtements."},
+    {char:"医生",pinyin:"yīshēng",fr:"Médecin",en:"Doctor",cat:"Social",ex:"去看医生。",exFr:"Aller chez le médecin."},
+    {char:"医院",pinyin:"yīyuàn",fr:"Hôpital",en:"Hospital",cat:"Lieux",ex:"在医院。",exFr:"A l'hôpital."},
+    {char:"椅子",pinyin:"yǐzi",fr:"Chaise",en:"Chair",cat:"Objets",ex:"桌子和椅子。",exFr:"Une table et une chaise."},
+    {char:"有",pinyin:"yǒu",fr:"Avoir",en:"To have",cat:"Verbes",ex:"我有钱。",exFr:"J'ai de l'argent."},
+    {char:"月",pinyin:"yuè",fr:"Mois / Lune",en:"Month",cat:"Temps",ex:"三月。",exFr:"Mars."},
+    {char:"再见",pinyin:"zàijiàn",fr:"Au revoir",en:"Goodbye",cat:"Social",ex:"再见！",exFr:"Au revoir !"},
+    {char:"在",pinyin:"zài",fr:"Être à / Dans",en:"At / In",cat:"Lieux",ex:"我在家。",exFr:"Je suis à la maison."},
+    {char:"怎么",pinyin:"zěnme",fr:"Comment",en:"How",cat:"Questions",ex:"你怎么去？",exFr:"Comment y vas-tu ?"},
+    {char:"怎么样",pinyin:"zěnmeyàng",fr:"Comment ça va ?",en:"How is it",cat:"Questions",ex:"天气怎么样？",exFr:"Comment est la météo ?"},
+    {char:"这",pinyin:"zhè",fr:"Ce / Ceci",en:"This",cat:"Grammaire",ex:"这是我的。",exFr:"C'est à moi."},
+    {char:"中国",pinyin:"Zhōngguó",fr:"Chine",en:"China",cat:"Lieux",ex:"去中国。",exFr:"Aller en Chine."},
+    {char:"中午",pinyin:"zhōngwǔ",fr:"Midi",en:"Noon",cat:"Temps",ex:"中午吃饭。",exFr:"Manger à midi."},
+    {char:"住",pinyin:"zhù",fr:"Habiter",en:"To live",cat:"Verbes",ex:"住在这里。",exFr:"Habiter ici."},
+    {char:"桌子",pinyin:"zhuōzi",fr:"Table",en:"Table",cat:"Objets",ex:"桌子上。",exFr:"Sur la table."},
+    {char:"字",pinyin:"zì",fr:"Caractère / Mot",en:"Character",cat:"Social",ex:"汉字。",exFr:"Caractère chinois."},
+    {char:"昨天",pinyin:"zuótiān",fr:"Hier",en:"Yesterday",cat:"Temps",ex:"昨天很冷。",exFr:"Hier il faisait froid."},
+    {char:"坐",pinyin:"zuò",fr:"S'asseoir / Prendre (transport)",en:"To sit",cat:"Verbes",ex:"请坐。",exFr:"Asseyez-vous."},
+    {char:"做",pinyin:"zuò",fr:"Faire",en:"To do",cat:"Verbes",ex:"做菜。",exFr:"Cuisiner."}
+];
+
+// --- LOGIQUE ---
+let state = {
+    mastered: JSON.parse(localStorage.getItem('hsk1_mastered') || '{}'),
+    streak: parseInt(localStorage.getItem('hsk1_streak') || '1'),
+    lang: localStorage.getItem('hsk1_lang') || 'fr'
+};
+
+const categories = ["All", ...new Set(HSK1.map(w => w.cat))];
+
+function save() {
+    localStorage.setItem('hsk1_mastered', JSON.stringify(state.mastered));
+    localStorage.setItem('hsk1_streak', state.streak.toString());
+    localStorage.setItem('hsk1_lang', state.lang);
+}
+
+function speak(text) {
+    window.speechSynthesis.cancel();
+    const msg = new SpeechSynthesisUtterance(text);
+    msg.lang = 'zh-CN';
+    msg.rate = 0.8;
+    msg.volume = 1.0; 
+    window.speechSynthesis.speak(msg);
+}
+
+function showSection(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    document.getElementById('viewTitle').innerText = btn.innerText.split('.')[1].trim() + " HSK1";
+    
+    if(id === 'resume') renderResume();
+    if(id === 'quiz') renderQuizNav();
+    if(id === 'stats') renderStats();
+}
+
+function changeLang(l) {
+    state.lang = l;
+    save();
+    updateUI();
+}
+
+function updateUI() {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`lang-${state.lang}`).classList.add('active');
+    renderFiches();
+    renderStats();
+}
+
+// 1. RENDU LEXIQUE
+function renderFiches() {
+    const grid = document.getElementById('vocabGrid');
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const cat = document.getElementById('catFilter').value;
+    
+    const filtered = HSK1.filter(w => {
+        const matchesCat = cat === "All" || w.cat === cat;
+        const trans = state.lang === 'fr' ? w.fr : w.en;
+        return matchesCat && (trans.toLowerCase().includes(search) || w.char.includes(search) || w.pinyin.toLowerCase().includes(search));
+    });
+
+    grid.innerHTML = filtered.map(w => `
+        <div class="vocab-card" onclick="speak('${w.char}')">
+            ${state.mastered[w.char] ? `<div class="mastered-badge">CONNU</div>` : ''}
+            <div class="vocab-pinyin">${w.pinyin.toUpperCase()}</div>
+            <div class="vocab-char">${w.char}</div>
+            <div class="vocab-fr">${state.lang === 'fr' ? w.fr : w.en}</div>
+            <div class="vocab-ex">${w.ex}<br><span style="opacity:0.5">${state.lang === 'fr' ? w.exFr : (w.exEn || w.fr)}</span></div>
+            <button onclick="toggleMastered(event, '${w.char}')" style="margin-top:15px; width:100%; padding:8px; background:var(--panel); border:1px solid var(--border-bold); color:var(--text-dim); font-size:0.6rem; cursor:pointer;">
+                ${state.mastered[w.char] ? 'MARQUER À RÉVISER' : 'MARQUER CONNU'}
+            </button>
+        </div>
+    `).join('');
+}
+
+function toggleMastered(e, char) {
+    e.stopPropagation();
+    state.mastered[char] = !state.mastered[char];
+    save();
+    renderFiches();
+}
+
+// 2. RENDU RÉSUMÉS
+function renderResume() {
+    const container = document.getElementById('resumeContainer');
+    let html = '';
+    categories.filter(c => c !== "All").forEach(cat => {
+        const words = HSK1.filter(w => w.cat === cat);
+        html += `<div class="resume-cat">
+            <h3>${cat.toUpperCase()} (${words.length})</h3>
+            ${words.map(w => `
+                <div class="resume-row" onclick="speak('${w.char}')">
+                    <div style="font-family:'Noto Serif SC'; color:var(--accent); font-size:1.2rem;">${w.char}</div>
+                    <div style="color:var(--primary); font-family:'Space Mono';">${w.pinyin}</div>
+                    <div style="color:var(--text-dim);">${state.lang === 'fr' ? w.fr : w.en}</div>
+                    <div style="text-align:right;">${state.mastered[w.char] ? '✅' : '·'}</div>
+                </div>
+            `).join('')}
+        </div>`;
+    });
+    container.innerHTML = html;
+}
+
+// --- ÉTAT DU QUIZ & MÉMOIRE ---
+// Initialisation de seenWords s'il n'existe pas
+if (!state.seenWords) state.seenWords = JSON.parse(localStorage.getItem('hsk1_seen') || '{}');
+
+let quizState = {
+    count: 0,
+    score: 0,
+    currentCat: "",
+};
+
+function saveSeenWords() {
+    localStorage.setItem('hsk1_seen', JSON.stringify(state.seenWords));
+}
+
+// 3. RENDU DU QUIZ (MODIFIÉ)
+function renderQuizNav() {
+    const container = document.getElementById('quizCatSelection');
+    document.getElementById('quizGame').style.display = 'none';
+    document.getElementById('quizInstructions').style.display = 'block';
+    
+    container.innerHTML = categories.map(cat => {
+        const fullPool = cat === "All" ? HSK1 : HSK1.filter(w => w.cat === cat);
+        const seenInCat = fullPool.filter(w => state.seenWords[w.char]).length;
+        const totalInCat = fullPool.length;
+        
+        return `
+            <button class="quiz-opt" onclick="startQuiz('${cat}')">
+                ${cat === 'All' ? 'TOUT MÉLANGER' : cat} <br>
+                <span style="font-size:0.6rem; opacity:0.7;">(${seenInCat}/${totalInCat} vus)</span>
+            </button>`;
+    }).join('');
+}
+
+function startQuiz(cat) {
+    quizState.count = 0;
+    quizState.score = 0;
+    quizState.currentCat = cat;
+    
+    document.getElementById('quizInstructions').style.display = 'none';
+    document.getElementById('quizCatSelection').innerHTML = '';
+    document.getElementById('quizGame').style.display = 'block';
+    
+    nextQuestion();
+}
+
+function nextQuestion() {
+    const cat = quizState.currentCat;
+    const fullPool = cat === "All" ? HSK1 : HSK1.filter(w => w.cat === cat);
+    
+    // 1. Filtrer les mots non vus
+    let available = fullPool.filter(w => !state.seenWords[w.char]);
+    
+    // 2. Si tout est vu, on réinitialise pour cette catégorie
+    if (available.length === 0) {
+        fullPool.forEach(w => delete state.seenWords[w.char]);
+        available = [...fullPool];
+        saveSeenWords();
+    }
+
+    // 3. Sélection du mot cible
+    const target = available[Math.floor(Math.random() * available.length)];
+    
+    // 4. Marquer comme vu
+    state.seenWords[target.char] = true;
+    saveSeenWords();
+
+    // 5. Préparer les options
+    const options = [target];
+    while(options.length < 4) {
+        let r = HSK1[Math.floor(Math.random() * HSK1.length)];
+        if(!options.find(o => o.char === r.char)) options.push(r);
+    }
+    options.sort(() => 0.5 - Math.random());
+
+    quizState.count++;
+
+    // 6. Mise à jour de l'affichage
+    document.getElementById('quizChar').innerHTML = `
+        <div style="font-size:0.8rem; color:var(--primary); font-family:'Space Mono'; margin-bottom:10px;">
+            QUESTION ${quizState.count} / 10
+        </div>
+        ${target.char}
+    `;
+    
+    document.getElementById('quizOptions').innerHTML = options.map(o => `
+        <button class="quiz-opt" onclick="checkAnswer('${o.char}', '${target.char}')">
+            ${state.lang === 'fr' ? o.fr : o.en}
+        </button>
+    `).join('');
+    
+    speak(target.char);
+}
+
+function checkAnswer(chosen, correct) {
+    if(chosen === correct) {
+        quizState.score++;
+        alert("Correct ! ✨");
+    } else {
+        alert("Faux. Le mot était : " + correct);
+    }
+
+    if(quizState.count < 10) {
+        nextQuestion();
+    } else {
+        alert(`Session terminée ! \nScore : ${quizState.score} / 10`);
+        renderQuizNav(); // Retour au menu du quiz
+    }
+}
+// 4. PROGRESSION
+function renderStats() {
+    const masteredCount = Object.values(state.mastered).filter(v => v).length;
+    document.getElementById('statMastered').innerText = masteredCount;
+    document.getElementById('statStreak').innerText = state.streak;
+
+    const bars = document.getElementById('progressionBars');
+    bars.innerHTML = categories.filter(c => c !== "All").map(cat => {
+        const words = HSK1.filter(w => w.cat === cat);
+        const m = words.filter(w => state.mastered[w.char]).length;
+        const pct = Math.round((m / words.length) * 100);
+        return `<div style="margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.6rem; color:var(--text-dim); margin-bottom:5px;">
+                <span>${cat}</span><span>${m}/${words.length} (${pct}%)</span>
+            </div>
+            <div class="lp-bar"><div class="lp-fill" style="width:${pct}%"></div></div>
+        </div>`;
+    }).join('');
+}
+
+function startApp() {
+    document.getElementById('unlocker').style.display = 'none';
+    // Init categories filter
+    const select = document.getElementById('catFilter');
+    categories.filter(c => c !== "All").forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.innerText = c;
+        select.appendChild(opt);
+    });
+    updateUI();
+}
+
+window.speechSynthesis.onvoiceschanged = () => {
+    document.getElementById('audioStatus').innerText = "AUDIO PRÊT (VOLUME MAX)";
+    document.getElementById('btnEntrer').style.display = "block";
+};
+setTimeout(() => { document.getElementById('btnEntrer').style.display = "block"; }, 1500);
+
+</script>
+</body>
+</html>
